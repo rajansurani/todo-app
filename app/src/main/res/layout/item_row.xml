@@ -4,83 +4,86 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple_200"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="3dp"
+        app:contentPadding="10dp"
+        android:layout_margin="10dp">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="To-do Task"
-            app:titleTextColor="@color/black"
-            />
-    </com.google.android.material.appbar.AppBarLayout>
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/taskname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Task Name"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/editimgbtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:backgroundTint="@android:color/transparent"
+                    app:srcCompat="@android:drawable/ic_menu_edit"/>
+
+                <ImageButton
+                    android:id="@+id/deleteimgbtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:layout_marginLeft="10dp"
+                    app:srcCompat="@android:drawable/ic_delete"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black"/>
+
+                <TextView
+                    android:id="@+id/taskdetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Detail"
+                    android:layout_marginTop="10dp"
+                    />
+
+                <TextView
+                    android:id="@+id/taskstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Status"
+                    android:layout_marginTop="10dp"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 
-    <TextView
-        android:id="@+id/taskid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Id : "
-        android:visibility="gone"/>
-
-<!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        android:id="@+id/textField"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:hint="To-do Task">-->
-
-<!--        <com.google.android.material.textfield.TextInputEditText-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-
-<!--            />-->
-
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
-
-    <TextView
-        android:id="@+id/taskname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Task Name"
-        android:layout_below="@id/appBarLayout"
-     />
-
-    <ImageButton
-        android:id="@+id/editimgbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_menu_edit"
-        android:layout_toRightOf="@+id/taskname"
-        android:layout_below="@id/appBarLayout"
-        android:layout_marginLeft="90dp"/>
-
-    <ImageButton
-        android:id="@+id/deleteimgbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/appBarLayout"
-        app:srcCompat="@android:drawable/ic_delete"
-        android:layout_toRightOf="@+id/editimgbtn"/>
 
 
-    <TextView
-        android:id="@+id/taskdetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Detail"
-        android:layout_below="@id/taskname"
-        />
 
-    <TextView
-        android:id="@+id/taskstatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status"
-        android:layout_below="@id/taskdetail"
-        />
 </RelativeLayout>

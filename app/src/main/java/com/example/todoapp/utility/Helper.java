@@ -12,7 +12,7 @@ public class Helper {
 
     public static final String SHARED_PREF = "todo-pref";
 
-    private boolean isNetworkAvailable(Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager manager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
@@ -40,6 +40,7 @@ public class Helper {
         SharedPreferences settings = context.getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
         return settings.getString(key, "");
     }
+
 
     public static final String md5(final String s) {
         final String MD5 = "MD5";

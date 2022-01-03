@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoApp">
         <activity
+            android:name=".activity.EditTodoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.View"
             android:exported="true">
             <intent-filter>

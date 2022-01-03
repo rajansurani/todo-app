@@ -37,6 +37,7 @@ public class DataAccess {
 
     public void addTodo(Todo todo) {
         localDatabase.insertTask(todo);
+
     }
 
     public void deleteTodo(Todo todo) {
@@ -44,7 +45,11 @@ public class DataAccess {
     }
 
     public void updateTodo(Todo todo) {
-        localDatabase.insertTask(todo);
+        localDatabase.updateTask(todo);
+    }
+
+    public Todo getTodoById(String id){
+        return localDatabase.getTaskById(id);
     }
 
     public List<Todo> getTodoList() {
