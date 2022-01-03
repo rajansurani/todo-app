@@ -61,4 +61,12 @@ public class Todo {
     public void setTaskSynced(boolean taskSynced) {
         this.taskSynced = taskSynced;
     }
+
+    public Timestamp getTaskCreatedDate() {
+        return taskCreatedDate;
+    }
+
+    public void setTaskCreatedDate(Timestamp taskCreatedDate) {
+        this.taskCreatedDate = taskCreatedDate;
+    }
 }
