@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,9 +54,7 @@ public class DataAccess {
 
     public void addTodo(Todo todo) {
         localDatabase.insertTask(todo);
-
         if(Helper.isNetworkAvailable(context)) {
-//            String url = context.getResources().getString(R.string.moneytap_url) + "/v3/partner/buildprofile";
             RequestQueue queue= Volley.newRequestQueue(context);
 
 
@@ -80,10 +79,7 @@ public class DataAccess {
     public void deleteTodo(Todo todo) {
         localDatabase.deleteTask(todo);
         if(Helper.isNetworkAvailable(context)) {
-//            String url = context.getResources().getString(R.string.moneytap_url) + "/v3/partner/buildprofile";
             RequestQueue queue= Volley.newRequestQueue(context);
-
-
             JsonObjectRequest jsonobjectRequest=new JsonObjectRequest(Request.Method.POST,"http://192.168.0.186:5000/task/delete", todo.toJson(), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -104,12 +100,8 @@ public class DataAccess {
 
     public void updateTodo(Todo todo) {
         localDatabase.updateTask(todo);
-
         if(Helper.isNetworkAvailable(context)) {
-//            String url = context.getResources().getString(R.string.moneytap_url) + "/v3/partner/buildprofile";
             RequestQueue queue= Volley.newRequestQueue(context);
-
-
             JsonObjectRequest jsonobjectRequest=new JsonObjectRequest(Request.Method.POST,"http://192.168.0.186:5000/task/update", todo.toJson(), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -126,8 +118,6 @@ public class DataAccess {
             });
             queue.add(jsonobjectRequest);
         }
-
-
     }
 
 
@@ -139,5 +129,16 @@ public class DataAccess {
     public List<Todo> getTodoList() {
         List<Todo> todoList = localDatabase.getTodoTasks();
         return todoList;
+    }
+
+    public void syncData(){
+        List<Todo> list = new ArrayList<>();
+        JSONArray array = new JSONArray();
+        for(Todo todo: list){
+            array.put(todo.toJson());
+            todo.setTaskSynced(true);
+            localDatabase.updateTask(todo);
+        }
+        //request update all
     }
 }

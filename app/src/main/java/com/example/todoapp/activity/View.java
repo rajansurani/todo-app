@@ -23,6 +23,7 @@ import com.example.todoapp.R;
 import com.example.todoapp.adapter.TodoListAdapter;
 import com.example.todoapp.database.DataAccess;
 import com.example.todoapp.database.model.Todo;
+import com.example.todoapp.utility.Helper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,63 +64,68 @@ public class View extends AppCompatActivity {
     }
 
     private void getTodoList() {
-        JSONObject jsonobject=new JSONObject();
+        if(Helper.isNetworkAvailable(this)){
+            JSONObject jsonobject = new JSONObject();
 
-        try {
-            jsonobject.put("USERID",DataAccess.getInstance(this).getUserId(this));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestQueue queue= Volley.newRequestQueue(this);
+            try {
+                jsonobject.put("USERID", DataAccess.getInstance(this).getUserId(this));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestQueue queue = Volley.newRequestQueue(this);
 
 
-        JsonObjectRequest jsonobjectRequest=new JsonObjectRequest(Request.Method.POST,"http://192.168.0.186:5000/task/all", jsonobject, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.v("ID:",response.toString());
-                JSONArray array = null;
-                try {
-                    array = response.getJSONArray("data");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                todolist = new ArrayList<>();
-                for (int i = 0; i < array.length(); i++) {
+            JsonObjectRequest jsonobjectRequest = new JsonObjectRequest(Request.Method.POST, "http://192.168.0.186:5000/task/all", jsonobject, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.v("ID:", response.toString());
+                    JSONArray array = null;
                     try {
-                        JSONObject json = array.getJSONObject(i);
-                        Todo t = new
-                                Todo(json.getString("taskid"),
-                                json.getString("userid"),
-                                json.getString("taskname"),
-                                json.getString("taskdetails"),
-                                json.getString("taskstatus"),
-                                new Timestamp(json.getLong("datecreated"))
-
-                        );
-                        todolist.add(t);
-
+                        array = response.getJSONArray("data");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+                    todolist = new ArrayList<>();
+                    for (int i = 0; i < array.length(); i++) {
+                        try {
+                            JSONObject json = array.getJSONObject(i);
+                            Todo t = new
+                                    Todo(json.getString("taskid"),
+                                    json.getString("userid"),
+                                    json.getString("taskname"),
+                                    json.getString("taskdetails"),
+                                    json.getString("taskstatus"),
+                                    new Timestamp(json.getLong("datecreated"))
+
+                            );
+                            todolist.add(t);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    todoadapter = new TodoListAdapter(View.this, R.layout.item_row, todolist);
+                    recyclerView.setAdapter(todoadapter);
+
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v("TAG", "ONERRORresponse:" + error.getMessage());
                 }
 
-                todoadapter = new TodoListAdapter(View.this, R.layout.item_row,todolist);
-                recyclerView.setAdapter(todoadapter);
 
+            });
+            jsonobjectRequest.setShouldCache(false);
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("TAG","ONERRORresponse:"+error.getMessage());
-            }
-
-
-        });
-        jsonobjectRequest.setShouldCache(false);
-
-        queue.add(jsonobjectRequest);
+            queue.add(jsonobjectRequest);
+        }else{
+            todoadapter = new TodoListAdapter(View.this, R.layout.item_row, DataAccess.getInstance(this).getTodoList());
+            recyclerView.setAdapter(todoadapter);
+        }
     }
 
 
