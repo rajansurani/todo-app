@@ -96,7 +96,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 dialog.dismiss();
             });
             builder.setNeutralButton("Complete", (dialog, view)->{
-                t.setTaskStatus("Complete");
+                t.setTaskStatus("Done");
                 DataAccess.getInstance(context).updateTodo(t, onComplete->{});
                 notifyDataSetChanged();
                 dialog.dismiss();
