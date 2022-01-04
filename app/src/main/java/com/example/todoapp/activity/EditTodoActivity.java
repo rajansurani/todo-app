@@ -102,9 +102,9 @@ public class EditTodoActivity extends AppCompatActivity {
           todo.setTaskCreatedDate(new Timestamp(new Date().getTime()));
           todo.setTaskSynced(Helper.isNetworkAvailable(getApplicationContext()));
           if(!edit)
-            dataAccess.addTodo(todo);
+            dataAccess.addTodo(todo, v->finish());
           else
-              dataAccess.updateTodo(todo);
+              dataAccess.updateTodo(todo, v->finish());
 
           finish();
       }
