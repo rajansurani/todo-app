@@ -1,5 +1,8 @@
 package com.example.todoapp.database.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.Timestamp;
 
 public class Todo {
@@ -68,5 +71,20 @@ public class Todo {
 
     public void setTaskCreatedDate(Timestamp taskCreatedDate) {
         this.taskCreatedDate = taskCreatedDate;
+    }
+
+    public JSONObject toJson(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("TASKID",this.taskId);
+            jsonObject.put("USERID",this.userID);
+            jsonObject.put("TASKNAME",this.taskName);
+            jsonObject.put("TASKDETAILS",this.taskDetails);
+            jsonObject.put("TASKSTATUS",this.taskStatus);
+            jsonObject.put("DATECREATED",this.taskCreatedDate.getTime());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 }
