@@ -16,6 +16,7 @@ import com.example.todoapp.activity.View;
 import com.example.todoapp.adapter.TodoListAdapter;
 import com.example.todoapp.database.model.Todo;
 import com.example.todoapp.utility.Helper;
+import com.example.todoapp.utility.OnCompleteListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +54,7 @@ public class DataAccess {
         return userId;
     }
 
-    public void addTodo(Todo todo) {
+    public void addTodo(Todo todo, OnCompleteListener<Boolean> onCompleteListener) {
         localDatabase.insertTask(todo);
         if(Helper.isNetworkAvailable(context)) {
             RequestQueue queue= Volley.newRequestQueue(context);
@@ -63,7 +64,7 @@ public class DataAccess {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.v("ID:",response.toString());
-
+                    onCompleteListener.OnComplete(true);
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -74,6 +75,8 @@ public class DataAccess {
 
             });
             queue.add(jsonobjectRequest);
+        }else{
+            onCompleteListener.OnComplete(true);
         }
     }
 
@@ -99,7 +102,7 @@ public class DataAccess {
         }
     }
 
-    public void updateTodo(Todo todo) {
+    public void updateTodo(Todo todo, OnCompleteListener<Boolean> onCompleteListener) {
         localDatabase.updateTask(todo);
         if(Helper.isNetworkAvailable(context)) {
             RequestQueue queue= Volley.newRequestQueue(context);
@@ -107,7 +110,7 @@ public class DataAccess {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.v("ID:",response.toString());
-
+                    onCompleteListener.OnComplete(true);
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -118,6 +121,8 @@ public class DataAccess {
 
             });
             queue.add(jsonobjectRequest);
+        }else{
+            onCompleteListener.OnComplete(true);
         }
     }
 
@@ -132,7 +137,7 @@ public class DataAccess {
         return todoList;
     }
 
-    public void syncData(){
+    public void syncData(OnCompleteListener<Boolean> onCompleteListener){
         List<Todo> list = localDatabase.getasyncTodoTasks();
         JSONArray array = new JSONArray();
         for(Todo todo: list){
@@ -144,13 +149,14 @@ public class DataAccess {
         JsonArrayRequest jsonarrayRequest=new JsonArrayRequest(Request.Method.POST,"http://192.168.0.186:5000/task/updateall",array , new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                onCompleteListener.OnComplete(true);
                 Log.v("ID:",response.toString());
-
+                Log.d("Listing", "onResponse: Sync COmplete");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.v("TAG","ONERRORresponse:"+error.getMessage());
+                Log.v("TAG","on error update all:"+error.getMessage());
             }
 
 

@@ -59,7 +59,7 @@ public class View extends AppCompatActivity {
         });
 
         if(Helper.isNetworkAvailable(getApplicationContext())) {
-            dataAccess.syncData();
+            dataAccess.syncData(v->getTodoList());
         }
 
         SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.SwipeToRefresh);
@@ -89,6 +89,7 @@ public class View extends AppCompatActivity {
     private void getTodoList() {
         if(Helper.isNetworkAvailable(this))
         {
+            Log.d("Listing", "getTodoList: ");
             JSONObject jsonobject=new JSONObject();
             try {
                 jsonobject.put("USERID",DataAccess.getInstance(this).getUserId(this));
