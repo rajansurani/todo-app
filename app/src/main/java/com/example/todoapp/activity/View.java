@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,11 +42,13 @@ public class View extends AppCompatActivity {
     TodoListAdapter todoadapter;
     List<Todo> todolist=new ArrayList<Todo>();
     String res;
+    DataAccess dataAccess;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
         recyclerView=findViewById(R.id.todorcv);
+        dataAccess=DataAccess.getInstance(getApplicationContext());
 
         recyclerView.setAdapter(todoadapter);
         RecyclerView.LayoutManager lm=new LinearLayoutManager(getApplicationContext());
@@ -54,31 +57,51 @@ public class View extends AppCompatActivity {
         findViewById(R.id.fabAdd).setOnClickListener(v->{
             startActivity(new Intent(this, EditTodoActivity.class));
         });
+
+        if(Helper.isNetworkAvailable(getApplicationContext())) {
+            dataAccess.syncData();
+        }
+
+        SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.SwipeToRefresh);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.purple_200);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                try {
+                   getTodoList();
+                   mSwipeRefreshLayout.setRefreshing(false);
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), String.valueOf(e.getMessage()), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         getTodoList();
 
     }
 
     private void getTodoList() {
-        if(Helper.isNetworkAvailable(this)){
-            JSONObject jsonobject = new JSONObject();
-
+        if(Helper.isNetworkAvailable(this))
+        {
+            JSONObject jsonobject=new JSONObject();
             try {
-                jsonobject.put("USERID", DataAccess.getInstance(this).getUserId(this));
+                jsonobject.put("USERID",DataAccess.getInstance(this).getUserId(this));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            RequestQueue queue = Volley.newRequestQueue(this);
+            RequestQueue queue= Volley.newRequestQueue(this);
 
 
-            JsonObjectRequest jsonobjectRequest = new JsonObjectRequest(Request.Method.POST, "http://192.168.0.186:5000/task/all", jsonobject, new Response.Listener<JSONObject>() {
+            JsonObjectRequest jsonobjectRequest=new JsonObjectRequest(Request.Method.POST,"http://192.168.0.186:5000/task/all", jsonobject, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    Log.v("ID:", response.toString());
+                    Log.v("ID:",response.toString());
                     JSONArray array = null;
                     try {
                         array = response.getJSONArray("data");
@@ -106,7 +129,7 @@ public class View extends AppCompatActivity {
                         }
                     }
 
-                    todoadapter = new TodoListAdapter(View.this, R.layout.item_row, todolist);
+                    todoadapter = new TodoListAdapter(View.this, R.layout.item_row,todolist);
                     recyclerView.setAdapter(todoadapter);
 
 
@@ -114,7 +137,7 @@ public class View extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.v("TAG", "ONERRORresponse:" + error.getMessage());
+                    Log.v("TAG","ONERRORresponse:"+error.getMessage());
                 }
 
 
@@ -122,10 +145,13 @@ public class View extends AppCompatActivity {
             jsonobjectRequest.setShouldCache(false);
 
             queue.add(jsonobjectRequest);
-        }else{
-            todoadapter = new TodoListAdapter(View.this, R.layout.item_row, DataAccess.getInstance(this).getTodoList());
+        }else
+        {
+            todoadapter = new TodoListAdapter(View.this, R.layout.item_row,DataAccess.getInstance(this).getTodoList());
             recyclerView.setAdapter(todoadapter);
         }
+
+
     }
 
 

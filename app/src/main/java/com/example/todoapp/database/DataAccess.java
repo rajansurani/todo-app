@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.todoapp.R;
@@ -132,13 +133,29 @@ public class DataAccess {
     }
 
     public void syncData(){
-        List<Todo> list = new ArrayList<>();
+        List<Todo> list = localDatabase.getasyncTodoTasks();
         JSONArray array = new JSONArray();
         for(Todo todo: list){
             array.put(todo.toJson());
             todo.setTaskSynced(true);
-            localDatabase.updateTask(todo);
+
         }
+        RequestQueue queue= Volley.newRequestQueue(context);
+        JsonArrayRequest jsonarrayRequest=new JsonArrayRequest(Request.Method.POST,"http://192.168.0.186:5000/task/updateall",array , new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.v("ID:",response.toString());
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v("TAG","ONERRORresponse:"+error.getMessage());
+            }
+
+
+        });
+        queue.add(jsonarrayRequest);
         //request update all
     }
 }

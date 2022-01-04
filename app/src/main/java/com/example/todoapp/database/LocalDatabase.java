@@ -94,6 +94,25 @@ public class LocalDatabase extends SQLiteOpenHelper {
         return todoList;
     }
 
+    public List<Todo> getasyncTodoTasks(){
+        Cursor cursor = this.getReadableDatabase().query(TABLE_TODO,
+                new String[]{COL_USER_ID, COL_TASK_ID, COL_TASK_NAME, COL_TASK_DETAILS, COL_TASK_STATUS, COL_TASK_CREATE_DATE, COL_TASK_SYNC_STATE},
+                COL_TASK_SYNC_STATE+"=?" ,new String[]{"0"}, null, null,null);
+        List<Todo> todoList = new ArrayList<>();
+        while(cursor.moveToNext()){
+            Todo todo = new Todo();
+            todo.setUserID(cursor.getString(0));
+            todo.setTaskId(cursor.getString(1));
+            todo.setTaskName(cursor.getString(2));
+            todo.setTaskDetails(cursor.getString(3));
+            todo.setTaskStatus(cursor.getString(4));
+            todo.setTaskCreatedDate(new Timestamp(cursor.getLong(5)));
+            todo.setTaskSynced(true);
+            updateTask(todo);
+            todoList.add(todo);
+        }
+        return todoList;
+    }
     public int deleteTask(Todo todo){
         SQLiteDatabase database = this.getWritableDatabase();
         return database.delete(TABLE_TODO,
