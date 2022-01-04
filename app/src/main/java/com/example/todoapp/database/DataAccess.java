@@ -37,7 +37,36 @@ public class DataAccess {
 
     public void addTodo(Todo todo) {
         localDatabase.insertTask(todo);
+        if(Helper.isNetworkAvailable(context)){
+            String url = context.getResources().getString(R.string.moneytap_url) + "/v3/partner/buildprofile";
+            RequestQueue queue = Volley.newRequestQueue(context);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, customer,
+                    response -> {
+                        completeSingleListener.OnComplete(response.optString("customerId", ""));
+                        if (!"".equals(response.optString("customerId", ""))) {
 
+                        }
+                    },
+                    error -> {
+                        try {
+                            JSONObject jsonObject = new JSONObject(new String(error.networkResponse.data));
+                            Toast.makeText(context, jsonObject.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        completeSingleListener.OnComplete("");
+                    }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("accept", "application/json");
+                    map.put("content-type", "application/json");
+                    map.put("authorization", "Bearer " + moneyTapAccessToken);
+                    return map;
+                }
+            };
+            queue.add(jsonObjectRequest);
+        }
     }
 
     public void deleteTodo(Todo todo) {
