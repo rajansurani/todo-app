@@ -1,12 +1,21 @@
 package com.example.todoapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.todoapp.R;
 import com.example.todoapp.database.DataAccess;
 import com.example.todoapp.database.model.Todo;
@@ -16,6 +25,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditTodoActivity extends AppCompatActivity {
 
@@ -25,6 +36,7 @@ public class EditTodoActivity extends AppCompatActivity {
     DataAccess dataAccess;
     boolean edit = false;
     Todo todo= null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +105,7 @@ public class EditTodoActivity extends AppCompatActivity {
             dataAccess.addTodo(todo);
           else
               dataAccess.updateTodo(todo);
+
           finish();
       }
 
@@ -119,4 +132,8 @@ public class EditTodoActivity extends AppCompatActivity {
         }
         return error;
     }
+
+
+
+
 }

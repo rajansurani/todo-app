@@ -8,12 +8,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.todoapp.R;
 import com.example.todoapp.adapter.TodoListAdapter;
 import com.example.todoapp.database.DataAccess;
 import com.example.todoapp.database.model.Todo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +46,9 @@ public class View extends AppCompatActivity {
         setContentView(R.layout.activity_view);
         recyclerView=findViewById(R.id.todorcv);
 
-        todolist = DataAccess.getInstance(this).getTodoList();
-
-        todoadapter = new TodoListAdapter(View.this, R.layout.item_row,todolist);
         recyclerView.setAdapter(todoadapter);
         RecyclerView.LayoutManager lm=new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(lm);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL));
-
 
         findViewById(R.id.fabAdd).setOnClickListener(v->{
             startActivity(new Intent(this, EditTodoActivity.class));
@@ -48,11 +58,69 @@ public class View extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        todolist = DataAccess.getInstance(this).getTodoList();
-        for(Todo todo : todolist){
-            Log.d("TAG", "onResume: id= "+todo.getTaskId()+ todo.isTaskSynced());
-        }
-        todoadapter = new TodoListAdapter(View.this, R.layout.item_row,todolist);
-        recyclerView.setAdapter(todoadapter);
+        getTodoList();
+
     }
+
+    private void getTodoList() {
+        JSONObject jsonobject=new JSONObject();
+
+        try {
+            jsonobject.put("USERID",DataAccess.getInstance(this).getUserId(this));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestQueue queue= Volley.newRequestQueue(this);
+
+
+        JsonObjectRequest jsonobjectRequest=new JsonObjectRequest(Request.Method.POST,"http://192.168.0.186:5000/task/all", jsonobject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.v("ID:",response.toString());
+                JSONArray array = null;
+                try {
+                    array = response.getJSONArray("data");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                todolist = new ArrayList<>();
+                for (int i = 0; i < array.length(); i++) {
+                    try {
+                        JSONObject json = array.getJSONObject(i);
+                        Todo t = new
+                                Todo(json.getString("taskid"),
+                                json.getString("userid"),
+                                json.getString("taskname"),
+                                json.getString("taskdetails"),
+                                json.getString("taskstatus"),
+                                new Timestamp(json.getLong("datecreated"))
+
+                        );
+                        todolist.add(t);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                todoadapter = new TodoListAdapter(View.this, R.layout.item_row,todolist);
+                recyclerView.setAdapter(todoadapter);
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v("TAG","ONERRORresponse:"+error.getMessage());
+            }
+
+
+        });
+        jsonobjectRequest.setShouldCache(false);
+
+        queue.add(jsonobjectRequest);
+    }
+
+
 }

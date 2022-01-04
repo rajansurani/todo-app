@@ -2,24 +2,34 @@ package com.example.todoapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.todoapp.R;
 import com.example.todoapp.activity.EditTodoActivity;
 import com.example.todoapp.database.DataAccess;
 import com.example.todoapp.database.model.Todo;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
 
@@ -60,6 +70,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 DataAccess.getInstance(context).deleteTodo(t);
                 todolist.remove(t);
                 notifyDataSetChanged();
+
             }
         });
     }
@@ -98,4 +109,8 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
 
     }
+
+
+
+
 }

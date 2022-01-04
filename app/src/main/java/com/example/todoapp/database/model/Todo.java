@@ -17,6 +17,15 @@ public class Todo {
     public Todo() {
     }
 
+    public Todo(String taskId, String userID,String taskName, String taskDetails, String taskStatus, Timestamp taskCreatedDate) {
+        this.taskName = taskName;
+        this.taskDetails = taskDetails;
+        this.taskId = taskId;
+        this.userID = userID;
+        this.taskStatus = taskStatus;
+        this.taskCreatedDate = taskCreatedDate;
+    }
+
     public String getTaskName() {
         return taskName;
     }
