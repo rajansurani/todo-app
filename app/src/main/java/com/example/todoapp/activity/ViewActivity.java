@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class View extends AppCompatActivity {
+public class ViewActivity extends AppCompatActivity {
 
 
     RecyclerView recyclerView;
