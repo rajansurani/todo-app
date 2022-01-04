@@ -130,7 +130,7 @@ public class ViewActivity extends AppCompatActivity {
                         }
                     }
 
-                    todoadapter = new TodoListAdapter(View.this, R.layout.item_row,todolist);
+                    todoadapter = new TodoListAdapter(ViewActivity.this, R.layout.item_row,todolist);
                     recyclerView.setAdapter(todoadapter);
 
 
@@ -148,7 +148,7 @@ public class ViewActivity extends AppCompatActivity {
             queue.add(jsonobjectRequest);
         }else
         {
-            todoadapter = new TodoListAdapter(View.this, R.layout.item_row,DataAccess.getInstance(this).getTodoList());
+            todoadapter = new TodoListAdapter(ViewActivity.this, R.layout.item_row,DataAccess.getInstance(this).getTodoList());
             recyclerView.setAdapter(todoadapter);
         }
 

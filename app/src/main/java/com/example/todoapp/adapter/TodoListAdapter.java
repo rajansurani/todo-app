@@ -1,18 +1,22 @@
 package com.example.todoapp.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -50,6 +54,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         return new ViewHolder(itemview);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Todo t = todolist.get(position);
@@ -67,12 +72,49 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         holder.delbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataAccess.getInstance(context).deleteTodo(t);
-                todolist.remove(t);
-                notifyDataSetChanged();
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Deleting Task");
+                builder.setMessage("Are you sure you want to delete?");
+                builder.setNegativeButton("No", (dialog, view)->{dialog.dismiss();});
+                builder.setPositiveButton("Yes", (dialog, view)->{
+                    DataAccess.getInstance(context).deleteTodo(t);
+                    todolist.remove(t);
+                    notifyDataSetChanged();
+                    dialog.dismiss();
+                });
+                builder.create().show();
             }
         });
+        holder.ivStatus.setOnClickListener(v->{
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Task Status");
+            builder.setMessage("Current Task Status: "+t.getTaskStatus()+"\nChange Task Status to?");
+            builder.setNegativeButton("In-Progress", (dialog, view)->{
+                t.setTaskStatus("In-Progress");
+                DataAccess.getInstance(context).updateTodo(t, onComplete->{});
+                notifyDataSetChanged();
+                dialog.dismiss();
+            });
+            builder.setNeutralButton("Complete", (dialog, view)->{
+                t.setTaskStatus("Complete");
+                DataAccess.getInstance(context).updateTodo(t, onComplete->{});
+                notifyDataSetChanged();
+                dialog.dismiss();
+            });
+            builder.setPositiveButton("Assigned", (dialog, view)->{
+                t.setTaskStatus("Assigned");
+                DataAccess.getInstance(context).updateTodo(t, onComplete->{});
+                notifyDataSetChanged();
+                dialog.dismiss();
+            });
+            builder.create().show();
+        });
+        if(t.getTaskStatus().equals("Assigned"))
+            holder.ivStatus.setImageTintList(context.getColorStateList(R.color.grey));
+        else if (t.getTaskStatus().equals("In-Progress"))
+            holder.ivStatus.setImageTintList(context.getColorStateList(R.color.purple_700));
+        else
+            holder.ivStatus.setImageTintList(context.getResources().getColorStateList(R.color.green));
     }
 
     @Override
@@ -86,6 +128,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         TextView taskdetail;
         TextView taskstatus;
         ImageButton delbtn, editbtn;
+        ImageView ivStatus;
         LinearLayout layoutDetails;
 
         public ViewHolder(@NonNull View itemView) {
@@ -96,6 +139,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             editbtn = itemView.findViewById(R.id.editimgbtn);
             delbtn = itemView.findViewById(R.id.deleteimgbtn);
             layoutDetails = itemView.findViewById(R.id.layoutDetails);
+            ivStatus = itemView.findViewById(R.id.ivStatus);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

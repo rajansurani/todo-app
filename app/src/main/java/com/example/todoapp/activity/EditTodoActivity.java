@@ -105,7 +105,7 @@ public class EditTodoActivity extends AppCompatActivity {
             dataAccess.addTodo(todo, v->finish());
           else
               dataAccess.updateTodo(todo, v->finish());
-
+          Toast.makeText(this, "Task Saved", Toast.LENGTH_SHORT).show();
           finish();
       }
 
