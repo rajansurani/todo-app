@@ -63,6 +63,9 @@ public class DataAccess {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.v("TAG", "ONERRORresponse:" + error.getMessage());
+                    todo.setTaskSynced(false);
+                    localDatabase.updateTask(todo);
+                    onCompleteListener.OnComplete(true);
                 }
 
 
@@ -109,6 +112,9 @@ public class DataAccess {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.v("TAG", "ONERRORresponse:" + error.getMessage());
+                    todo.setTaskSynced(false);
+                    localDatabase.updateTask(todo);
+                    onCompleteListener.OnComplete(true);
                 }
 
 
@@ -149,6 +155,11 @@ public class DataAccess {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.v("TAG", "on error update all:" + error.getMessage());
+                for (Todo todo : list) {
+                    array.put(todo.toJson());
+                    todo.setTaskSynced(false);
+                    localDatabase.updateTask(todo);
+                }
             }
 
 
